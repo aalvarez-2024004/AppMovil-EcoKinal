@@ -1,0 +1,133 @@
+import axios from 'axios'
+
+const isLocal = window.location.hostname === 'localhost'
+
+const AuthApi = axios.create({
+  baseURL: isLocal
+    ? 'http://localhost:3005/api'
+    : import.meta.env.VITE_AUTH_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    ...(!isLocal && { 'ngrok-skip-browser-warning': 'true' }),
+  }
+})
+
+const DetectorApi = axios.create({
+  baseURL: isLocal
+    ? 'http://localhost:3007/api/vision'
+    : import.meta.env.VITE_DETECTOR_URL,
+  timeout: 60000,
+  headers: {
+    'Content-Type': 'application/json',
+    ...(!isLocal && { 'ngrok-skip-browser-warning': 'true' }),
+  }
+})
+
+const GamificationApi = axios.create({
+  baseURL: isLocal
+    ? 'http://localhost:3008/GamificationEcoKinal/v1'
+    : import.meta.env.VITE_GAMIFICATION_URL,
+  headers: {
+    'Content-Type': 'application/json',
+    ...(!isLocal && { 'ngrok-skip-browser-warning': 'true' }),
+  }
+})
+
+const ForoApi = axios.create({
+  baseURL: isLocal
+    ? 'http://localhost:3006/ForoEcoKinal/v1'
+    : import.meta.env.VITE_FORO_URL,
+  headers: {
+    ...(!isLocal && { 'ngrok-skip-browser-warning': 'true',
+        'cf-skip-browser-warning': '1' 
+     }),
+  }
+})
+
+AuthApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+
+  if (!(config.data instanceof FormData)) {
+    config.headers['Content-Type'] = 'application/json'
+  }
+
+  return config
+})
+
+AuthApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+DetectorApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+DetectorApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+GamificationApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+  return config
+})
+
+GamificationApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+ForoApi.interceptors.request.use((config) => {
+  const token = localStorage.getItem('token')
+  if (token) config.headers.Authorization = `Bearer ${token}`
+
+  if (config.method === 'get') {
+    delete config.headers['Content-Type']
+  } else if (config.data instanceof FormData) {
+    delete config.headers['Content-Type']
+  } else {
+    config.headers['Content-Type'] = 'application/json'
+  }
+
+  return config
+})
+
+ForoApi.interceptors.response.use(
+  (response) => response,
+  (error) => {
+    if (error.response?.status === 401) {
+      localStorage.removeItem('token')
+      localStorage.removeItem('user')
+      window.location.href = '/login'
+    }
+    return Promise.reject(error)
+  }
+)
+
+export { AuthApi, DetectorApi, GamificationApi, ForoApi }

@@ -1,0 +1,7 @@
+allowBuilds:
+  '@google/genai': true
+  '@scarf/scarf': true
+  bcrypt: true
+  core-js: true
+  protobufjs: true
+  sharp: true
