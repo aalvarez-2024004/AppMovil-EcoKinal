@@ -1,5 +1,4 @@
-import React, { useEffect } from "react";
-import { useState } from "react";
+import React, { useEffect, useState } from "react";
 import {
   View,
   Text,
@@ -11,26 +10,34 @@ import {
   useWindowDimensions,
   Keyboard,
   Image,
+  ActivityIndicator,
 } from "react-native";
-import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts, Fraunces_600SemiBold, Fraunces_500Medium_Italic } from "@expo-google-fonts/fraunces";
+
 import { useAuthStore } from "../../../shared/store/useAuthStore";
 import { KB, s } from "../../../shared/constants/login";
 import { EKInput } from "../../../shared/components/LoginComponents";
+import { OrganicHeader } from "../../../shared/components/OrganicHeader";
 
 const LoginScreen = () => {
   const navigation = useNavigation();
+  const { height } = useWindowDimensions();
 
-  useEffect(() => {
-    return () => Keyboard.dismiss();
-  }, []);
+  const [fontsLoaded] = useFonts({
+    Fraunces_600SemiBold,
+    Fraunces_500Medium_Italic,
+  });
 
   const { login, isLoading, clearError } = useAuthStore();
-  const { height } = useWindowDimensions();
 
   const [form, setForm] = useState({ email: "", password: "" });
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState(null);
+
+  useEffect(() => {
+    return () => Keyboard.dismiss();
+  }, []);
 
   const validate = () => {
     const e = {};
@@ -57,7 +64,6 @@ const LoginScreen = () => {
       return;
     }
 
-    // Mismo patrón de tu web: redirige según el rol
     const role = result.user?.role?.name;
     if (role === "ADMIN_GENERAL") {
       navigation.reset({ index: 0, routes: [{ name: "AdminHome" }] });
@@ -68,9 +74,17 @@ const LoginScreen = () => {
 
   const isPending = loginError?.toLowerCase().includes("aprobado");
 
+  if (!fontsLoaded) {
+    return (
+      <View style={[s.root, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color={KB.greenMid} />
+      </View>
+    );
+  }
+
   return (
     <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} />
+      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} translucent />
 
       <KeyboardAvoidingView
         style={s.flex1}
@@ -83,27 +97,20 @@ const LoginScreen = () => {
           bounces={false}
           overScrollMode="never"
         >
-          <LinearGradient
-            colors={[KB.greenDark, KB.greenMid]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={s.header}
-          >
+          <OrganicHeader>
             <View style={s.logoRing}>
               <Image
                 source={require("../../../../assets/images/icon.png")}
-                style={[s.logoImage, { tintColor: "#FFFFFF" }]}
+                style={s.logoImage}
                 resizeMode="contain"
               />
             </View>
-            <Text style={s.brandTagTittle}>ECOKINAL</Text>
-            <Text style={s.brandTagline}>
-              Cuida el planeta, un paso a la vez.
-            </Text>
-          </LinearGradient>
+            <Text style={s.brandTagTittle}>EcoKinal</Text>
+            <Text style={s.brandTagline}>Cuida el planeta, un paso a la vez.</Text>
+          </OrganicHeader>
 
           <View style={s.card}>
-            <Text style={s.cardTitle}>Hola, Bienvenido</Text>
+            <Text style={s.cardTitle}>Hola, bienvenido</Text>
             <Text style={s.cardSub}>Ingresa a tu espacio ecológico</Text>
 
             <EKInput
@@ -128,16 +135,11 @@ const LoginScreen = () => {
             />
 
             {loginError ? (
-              <View
-                style={[s.alertBox, isPending ? s.alertWarning : s.alertError]}
-              >
+              <View style={[s.alertBox, isPending ? s.alertWarning : s.alertError]}>
                 <Text style={s.alertIcon}>{isPending ? "⏳" : "⚠️"}</Text>
                 <View style={s.flex1}>
                   <Text
-                    style={[
-                      s.alertTitle,
-                      { color: isPending ? KB.warning : KB.error },
-                    ]}
+                    style={[s.alertTitle, { color: isPending ? KB.warning : KB.error }]}
                   >
                     {isPending ? "Cuenta pendiente" : "Credenciales incorrectas"}
                   </Text>

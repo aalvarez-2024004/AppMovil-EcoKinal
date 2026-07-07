@@ -16,7 +16,7 @@ export const EKInput = ({
     <View style={s.inputWrap}>
       <Text style={s.inputLabel}>{label}</Text>
       <View style={[s.inputBox, error && s.inputBoxError]}>
-        <Ionicons name={icon} size={18} color={KB.muted} />
+        <Ionicons name={icon} size={20} color={error ? KB.error : KB.greenMid} />
         <TextInput
           style={s.input}
           placeholderTextColor={KB.muted}
@@ -24,10 +24,10 @@ export const EKInput = ({
           {...props}
         />
         {secureTextEntry && (
-          <TouchableOpacity onPress={() => setHidden((p) => !p)}>
+          <TouchableOpacity onPress={() => setHidden((p) => !p)} hitSlop={{ top: 10, bottom: 10, left: 10, right: 10 }}>
             <Ionicons
               name={hidden ? "eye-outline" : "eye-off-outline"}
-              size={18}
+              size={20}
               color={KB.muted}
             />
           </TouchableOpacity>

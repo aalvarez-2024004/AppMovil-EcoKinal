@@ -4,9 +4,9 @@ const USE_LOCAL_LAN = false;
 
 const BASE_URL =
   Platform.OS === "web"
-    ? "https://ecokinal-auth-api.onrender.com/api" // 👈 ajusta con tu URL real de despliegue
+    ? "https://ecokinal-auth-api.onrender.com/api" // 👈 ajustar la URL real de despliegue
     : USE_LOCAL_LAN
-    ? "http://192.168.0.4:3005/api" // 👈 tu IP local mientras desarrollas
+    ? "http://192.168.0.4:3005/api" // 
     : "https://ecokinal-auth-api.onrender.com/api";
 
 export const AUTH_ENDPOINTS = {
