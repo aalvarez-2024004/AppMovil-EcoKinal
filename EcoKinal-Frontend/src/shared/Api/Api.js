@@ -1,6 +1,6 @@
 import axios from 'axios'
 
-const isLocal = window.location.hostname === 'localhost'
+const isLocal = false;
 
 const AuthApi = axios.create({
   baseURL: isLocal
@@ -48,9 +48,11 @@ AuthApi.interceptors.request.use((config) => {
   const token = localStorage.getItem('token')
   if (token) config.headers.Authorization = `Bearer ${token}`
 
-  if (!(config.data instanceof FormData)) {
-    config.headers['Content-Type'] = 'application/json'
-  }
+    if (config.data instanceof FormData) {
+      delete config.headers['Content-Type']
+    } else {
+      config.headers['Content-Type'] = 'application/json'
+    }
 
   return config
 })
