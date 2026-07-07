@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,10 +10,13 @@ import {
   useWindowDimensions,
   Keyboard,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { Ionicons } from "@expo/vector-icons";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts, Fraunces_600SemiBold, Fraunces_500Medium_Italic } from "@expo-google-fonts/fraunces";
+
 import { useAuthStore } from "../../../shared/store/useAuthStore";
 import { KB, s } from "../../../shared/constants/forgotPassword";
 import { EKInput } from "../../../shared/components/LoginComponents";
@@ -21,8 +24,13 @@ import { EKInput } from "../../../shared/components/LoginComponents";
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation();
   const { requestPasswordReset, resetPassword, isLoading } = useAuthStore();
-
   const { height } = useWindowDimensions();
+
+  // Fuentes premium añadidas
+  const [fontsLoaded] = useFonts({
+    Fraunces_600SemiBold,
+    Fraunces_500Medium_Italic,
+  });
 
   // step 1 = pedir el correo | step 2 = pegar token + nueva contraseña
   const [step, setStep] = useState(1);
@@ -32,6 +40,10 @@ const ForgotPasswordScreen = () => {
   const [newPassword, setNewPassword] = useState("");
   const [confirmPassword, setConfirmPassword] = useState("");
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    return () => Keyboard.dismiss();
+  }, []);
 
   const handleRequestReset = async () => {
     Keyboard.dismiss();
@@ -69,9 +81,17 @@ const ForgotPasswordScreen = () => {
     }
   };
 
+  if (!fontsLoaded) {
+    return (
+      <View style={[s.root, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color={KB.greenMid} />
+      </View>
+    );
+  }
+
   return (
     <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} />
+      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} translucent />
 
       <KeyboardAvoidingView
         style={s.flex1}
