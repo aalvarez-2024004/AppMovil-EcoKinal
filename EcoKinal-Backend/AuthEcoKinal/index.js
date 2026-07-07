@@ -14,9 +14,11 @@ const startServer = async () => {
   await seedRoles()
   await seedAdminGeneral()
 
-  app.listen(config.app?.port || process.env.PORT, () => {
-    console.log(`Servidor corriendo en el puerto: ${process.env.PORT}`)
-  })
+  const PORT = process.env.PORT || 3005;
+
+  app.listen(PORT, () => {
+      console.log(`Servidor corriendo en el puerto ${PORT}`);
+  });
 }
 
 startServer()
