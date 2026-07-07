@@ -37,10 +37,12 @@ export const registerUser = async (data) => {
     image: image || null
   })
  
- const verificationToken = generateVerificationToken(user)
- 
- //Enviar el correo
- await sendVerificationEmail(user.email, verificationToken)
+    const verificationToken = generateVerificationToken(user)
+
+    // No bloqueamos el registro si el correo falla o tarda
+    sendVerificationEmail(user.email, verificationToken).catch((err) => {
+      console.error('No se pudo enviar el correo de verificación:', err.message)
+    })
  
  
   const userWithoutPassword = user.toJSON()

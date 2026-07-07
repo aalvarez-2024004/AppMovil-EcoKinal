@@ -1,13 +1,6 @@
-import nodemailer from 'nodemailer'
+import { Resend } from 'resend'
 
-const createTransporter = () =>
-  nodemailer.createTransport({
-    service: 'gmail',
-    auth: {
-      user: process.env.EMAIL_USER,
-      pass: process.env.EMAIL_PASS,
-    },
-  })
+const resend = new Resend(process.env.RESEND_API_KEY)
 
 // ─── PLANTILLA BASE ────────────────────────────────────────────────────────
 const baseTemplate = ({ title, preheader, body }) => `
@@ -73,9 +66,6 @@ const baseTemplate = ({ title, preheader, body }) => `
 
 // ─── VERIFICACIÓN DE CUENTA ────────────────────────────────────────────────
 export const sendVerificationEmail = async (email, token) => {
-  const transporter = createTransporter()
-
-  // 🔗 Link directo — el usuario solo hace clic, no copia nada
   const verificationLink = `${process.env.FRONTEND_URL}/verify/${token}`
 
   const body = `
@@ -118,8 +108,8 @@ export const sendVerificationEmail = async (email, token) => {
     </div>
   `
 
-  await transporter.sendMail({
-    from: `"EcoKinal" <${process.env.EMAIL_USER}>`,
+  const { data, error } = await resend.emails.send({
+    from: 'EcoKinal <onboarding@resend.dev>',
     to: email,
     subject: '✅ Verifica tu cuenta en EcoKinal',
     html: baseTemplate({
@@ -128,12 +118,17 @@ export const sendVerificationEmail = async (email, token) => {
       body,
     }),
   })
+
+  if (error) {
+    console.error('Error enviando correo de verificación:', error)
+    throw new Error('No se pudo enviar el correo de verificación')
+  }
+
+  return data
 }
 
 // ─── RECUPERACIÓN DE CONTRASEÑA ────────────────────────────────────────────
 export const sendResetPasswordEmail = async (email, token) => {
-  const transporter = createTransporter()
-
   const resetLink = `${process.env.FRONTEND_URL}/reset-password?token=${token}`
 
   const body = `
@@ -176,8 +171,8 @@ export const sendResetPasswordEmail = async (email, token) => {
     </div>
   `
 
-  await transporter.sendMail({
-    from: `"EcoKinal" <${process.env.EMAIL_USER}>`,
+  const { data, error } = await resend.emails.send({
+    from: 'EcoKinal <onboarding@resend.dev>',
     to: email,
     subject: '🔒 Recuperación de contraseña — EcoKinal',
     html: baseTemplate({
@@ -186,4 +181,11 @@ export const sendResetPasswordEmail = async (email, token) => {
       body,
     }),
   })
+
+  if (error) {
+    console.error('Error enviando correo de recuperación:', error)
+    throw new Error('No se pudo enviar el correo de recuperación')
+  }
+
+  return data
 }
