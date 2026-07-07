@@ -4,6 +4,7 @@
   "description": "API de auth con Node.js y PostgreSQL",
   "main": "index.js",
   "type": "module",
+  "packageManager": "pnpm@11.1.2",
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1",
     "start": "cross-env NODE_ENV=production node index.js",
