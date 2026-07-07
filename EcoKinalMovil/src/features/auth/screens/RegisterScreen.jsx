@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import {
   View,
   Text,
@@ -10,9 +10,12 @@ import {
   useWindowDimensions,
   Keyboard,
   Alert,
+  ActivityIndicator,
 } from "react-native";
 import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
+import { useFonts, Fraunces_600SemiBold, Fraunces_500Medium_Italic } from "@expo-google-fonts/fraunces";
+
 import { useAuthStore } from "../../../shared/store/useAuthStore";
 import { KB, s } from "../../../shared/constants/register";
 import { EKInput } from "../../../shared/components/LoginComponents";
@@ -22,6 +25,12 @@ const RegisterScreen = () => {
   const { register, isLoading } = useAuthStore();
   const { height } = useWindowDimensions();
 
+  // Cargamos las fuentes premium para mantener el estilo impecable
+  const [fontsLoaded] = useFonts({
+    Fraunces_600SemiBold,
+    Fraunces_500Medium_Italic,
+  });
+
   const [form, setForm] = useState({
     name: "",
     username: "",
@@ -30,6 +39,10 @@ const RegisterScreen = () => {
     confirmPassword: "",
   });
   const [errors, setErrors] = useState({});
+
+  useEffect(() => {
+    return () => Keyboard.dismiss();
+  }, []);
 
   const update = (field) => (value) =>
     setForm((prev) => ({ ...prev, [field]: value }));
@@ -66,9 +79,17 @@ const RegisterScreen = () => {
     }
   };
 
+  if (!fontsLoaded) {
+    return (
+      <View style={[s.root, { justifyContent: "center", alignItems: "center" }]}>
+        <ActivityIndicator size="large" color={KB.greenMid} />
+      </View>
+    );
+  }
+
   return (
     <View style={s.root}>
-      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} />
+      <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} translucent />
 
       <KeyboardAvoidingView
         style={s.flex1}
@@ -87,7 +108,7 @@ const RegisterScreen = () => {
             end={{ x: 1, y: 1 }}
             style={s.header}
           >
-            <Text style={s.brandName}>ECOKINAL</Text>
+            <Text style={s.brandName}>EcoKinal</Text>
             <Text style={s.pageTitle}>Crear cuenta</Text>
             <Text style={s.pageSub}>Únete al movimiento ecológico</Text>
           </LinearGradient>
