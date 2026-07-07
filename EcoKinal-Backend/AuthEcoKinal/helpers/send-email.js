@@ -1,6 +1,33 @@
-import { Resend } from 'resend'
+const BREVO_API_KEY = process.env.BREVO_API_KEY
+const BREVO_SENDER_EMAIL = process.env.BREVO_SENDER_EMAIL // ej: no-reply@tudominio.com
+const BREVO_SENDER_NAME = process.env.BREVO_SENDER_NAME || 'EcoKinal'
 
-const resend = new Resend(process.env.RESEND_API_KEY)
+// ─── HELPER: ENVÍO VÍA BREVO ────────────────────────────────────────────────
+const sendWithBrevo = async ({ to, subject, html }) => {
+  const response = await fetch('https://api.brevo.com/v3/smtp/email', {
+    method: 'POST',
+    headers: {
+      'accept': 'application/json',
+      'api-key': BREVO_API_KEY,
+      'content-type': 'application/json',
+    },
+    body: JSON.stringify({
+      sender: { name: BREVO_SENDER_NAME, email: BREVO_SENDER_EMAIL },
+      to: [{ email: to }],
+      subject,
+      htmlContent: html,
+    }),
+  })
+
+  const data = await response.json()
+
+  if (!response.ok) {
+    console.error('Error de Brevo:', data)
+    throw new Error(data.message || 'No se pudo enviar el correo')
+  }
+
+  return data
+}
 
 // ─── PLANTILLA BASE ────────────────────────────────────────────────────────
 const baseTemplate = ({ title, preheader, body }) => `
@@ -108,23 +135,20 @@ export const sendVerificationEmail = async (email, token) => {
     </div>
   `
 
-  const { data, error } = await resend.emails.send({
-    from: 'EcoKinal <onboarding@resend.dev>',
-    to: email,
-    subject: '✅ Verifica tu cuenta en EcoKinal',
-    html: baseTemplate({
-      title: 'Verifica tu cuenta — EcoKinal',
-      preheader: 'Un clic y tu cuenta estará activa. Bienvenido a EcoKinal.',
-      body,
-    }),
-  })
-
-  if (error) {
+  try {
+    return await sendWithBrevo({
+      to: email,
+      subject: '✅ Verifica tu cuenta en EcoKinal',
+      html: baseTemplate({
+        title: 'Verifica tu cuenta — EcoKinal',
+        preheader: 'Un clic y tu cuenta estará activa. Bienvenido a EcoKinal.',
+        body,
+      }),
+    })
+  } catch (error) {
     console.error('Error enviando correo de verificación:', error)
     throw new Error('No se pudo enviar el correo de verificación')
   }
-
-  return data
 }
 
 // ─── RECUPERACIÓN DE CONTRASEÑA ────────────────────────────────────────────
@@ -171,21 +195,18 @@ export const sendResetPasswordEmail = async (email, token) => {
     </div>
   `
 
-  const { data, error } = await resend.emails.send({
-    from: 'EcoKinal <onboarding@resend.dev>',
-    to: email,
-    subject: '🔒 Recuperación de contraseña — EcoKinal',
-    html: baseTemplate({
-      title: 'Recuperar contraseña — EcoKinal',
-      preheader: 'Solicitaste restablecer tu contraseña. El enlace expira en 30 minutos.',
-      body,
-    }),
-  })
-
-  if (error) {
+  try {
+    return await sendWithBrevo({
+      to: email,
+      subject: '🔒 Recuperación de contraseña — EcoKinal',
+      html: baseTemplate({
+        title: 'Recuperar contraseña — EcoKinal',
+        preheader: 'Solicitaste restablecer tu contraseña. El enlace expira en 30 minutos.',
+        body,
+      }),
+    })
+  } catch (error) {
     console.error('Error enviando correo de recuperación:', error)
     throw new Error('No se pudo enviar el correo de recuperación')
   }
-
-  return data
 }
