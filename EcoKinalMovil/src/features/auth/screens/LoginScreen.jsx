@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import React, { useEffect, useRef, useState } from "react";
 import {
   View,
   Text,
@@ -11,7 +11,9 @@ import {
   Keyboard,
   Image,
   ActivityIndicator,
+  Animated,
 } from "react-native";
+import { LinearGradient } from "expo-linear-gradient";
 import { useNavigation } from "@react-navigation/native";
 import { useFonts, Fraunces_600SemiBold, Fraunces_500Medium_Italic } from "@expo-google-fonts/fraunces";
 
@@ -35,7 +37,15 @@ const LoginScreen = () => {
   const [errors, setErrors] = useState({});
   const [loginError, setLoginError] = useState(null);
 
+  const cardFade = useRef(new Animated.Value(0)).current;
+  const cardSlide = useRef(new Animated.Value(16)).current;
+  const btnScale = useRef(new Animated.Value(1)).current;
+
   useEffect(() => {
+    Animated.parallel([
+      Animated.timing(cardFade, { toValue: 1, duration: 420, useNativeDriver: true }),
+      Animated.timing(cardSlide, { toValue: 0, duration: 420, useNativeDriver: true }),
+    ]).start();
     return () => Keyboard.dismiss();
   }, []);
 
@@ -52,6 +62,9 @@ const LoginScreen = () => {
     clearError();
     setForm((p) => ({ ...p, [field]: value }));
   };
+
+  const pressIn = () => Animated.spring(btnScale, { toValue: 0.97, useNativeDriver: true }).start();
+  const pressOut = () => Animated.spring(btnScale, { toValue: 1, friction: 4, useNativeDriver: true }).start();
 
   const handleLogin = async () => {
     setLoginError(null);
@@ -86,10 +99,7 @@ const LoginScreen = () => {
     <View style={s.root}>
       <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} translucent />
 
-      <KeyboardAvoidingView
-        style={s.flex1}
-        behavior={Platform.OS === "ios" ? "padding" : "height"}
-      >
+      <KeyboardAvoidingView style={s.flex1} behavior={Platform.OS === "ios" ? "padding" : "height"}>
         <ScrollView
           contentContainerStyle={{ minHeight: height }}
           keyboardShouldPersistTaps="handled"
@@ -109,7 +119,12 @@ const LoginScreen = () => {
             <Text style={s.brandTagline}>Cuida el planeta, un paso a la vez.</Text>
           </OrganicHeader>
 
-          <View style={s.card}>
+          <Animated.View
+            style={[
+              s.card,
+              { opacity: cardFade, transform: [{ translateY: cardSlide }] },
+            ]}
+          >
             <Text style={s.cardTitle}>Hola, bienvenido</Text>
             <Text style={s.cardSub}>Ingresa a tu espacio ecológico</Text>
 
@@ -138,9 +153,7 @@ const LoginScreen = () => {
               <View style={[s.alertBox, isPending ? s.alertWarning : s.alertError]}>
                 <Text style={s.alertIcon}>{isPending ? "⏳" : "⚠️"}</Text>
                 <View style={s.flex1}>
-                  <Text
-                    style={[s.alertTitle, { color: isPending ? KB.warning : KB.error }]}
-                  >
+                  <Text style={[s.alertTitle, { color: isPending ? KB.warning : KB.error }]}>
                     {isPending ? "Cuenta pendiente" : "Credenciales incorrectas"}
                   </Text>
                   <Text style={s.alertBody}>{loginError}</Text>
@@ -148,21 +161,28 @@ const LoginScreen = () => {
               </View>
             ) : null}
 
-            <TouchableOpacity
-              style={[s.btnPrimary, isLoading && s.btnDisabled]}
-              onPress={handleLogin}
-              disabled={isLoading}
-              activeOpacity={0.85}
-            >
-              <Text style={s.btnPrimaryText}>
-                {isLoading ? "Verificando..." : "INICIAR SESIÓN"}
-              </Text>
-            </TouchableOpacity>
+            <Animated.View style={[s.btnPrimaryWrap, { transform: [{ scale: btnScale }] }]}>
+              <TouchableOpacity
+                onPress={handleLogin}
+                onPressIn={pressIn}
+                onPressOut={pressOut}
+                disabled={isLoading}
+                activeOpacity={0.9}
+              >
+                <LinearGradient
+                  colors={isLoading ? [KB.border, KB.border] : [KB.accent, KB.accentDark]}
+                  start={{ x: 0, y: 0 }}
+                  end={{ x: 1, y: 1 }}
+                  style={s.btnPrimary}
+                >
+                  <Text style={s.btnPrimaryText}>
+                    {isLoading ? "Verificando..." : "INICIAR SESIÓN"}
+                  </Text>
+                </LinearGradient>
+              </TouchableOpacity>
+            </Animated.View>
 
-            <TouchableOpacity
-              style={s.forgotRow}
-              onPress={() => navigation.navigate("ForgotPassword")}
-            >
+            <TouchableOpacity style={s.forgotRow} onPress={() => navigation.navigate("ForgotPassword")}>
               <Text style={s.forgotText}>¿Olvidaste tu contraseña?</Text>
             </TouchableOpacity>
 
@@ -179,7 +199,7 @@ const LoginScreen = () => {
             >
               <Text style={s.btnOutlineText}>Crear cuenta nueva</Text>
             </TouchableOpacity>
-          </View>
+          </Animated.View>
 
           <View style={s.footer}>
             <Text style={s.footerText}>Versión 1.0.0</Text>

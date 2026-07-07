@@ -1,5 +1,5 @@
 import { StyleSheet } from "react-native";
-import { KB, FONTS } from "./login"; // Reutilizamos la misma paleta y fuentes
+import { KB, FONTS } from "./login";
 
 export { KB };
 
@@ -8,11 +8,11 @@ export const s = StyleSheet.create({
   flex1: { flex: 1 },
 
   header: {
-    paddingTop: 70,
-    paddingBottom: 30,
+    paddingTop: 60,
+    paddingBottom: 26,
     alignItems: "center",
-    borderBottomLeftRadius: 40,
-    borderBottomRightRadius: 40,
+    borderBottomLeftRadius: 32,
+    borderBottomRightRadius: 32,
     shadowColor: KB.greenDark,
     shadowOpacity: 0.2,
     shadowRadius: 15,
@@ -21,37 +21,55 @@ export const s = StyleSheet.create({
   },
   backBtn: {
     position: "absolute",
-    top: 60,
+    top: 56,
     left: 20,
-    width: 40,
-    height: 40,
-    borderRadius: 20,
-    backgroundColor: "rgba(255,255,255,0.2)",
+    width: 38,
+    height: 38,
+    borderRadius: 19,
+    backgroundColor: "rgba(255,255,255,0.18)",
     justifyContent: "center",
     alignItems: "center",
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.25)",
+  },
+  headerIconRing: {
+    width: 60,
+    height: 60,
+    borderRadius: 30,
+    backgroundColor: "rgba(255,255,255,0.16)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 14,
+    borderWidth: 1,
+    borderColor: "rgba(255,255,255,0.3)",
   },
   pageTitle: {
     fontFamily: FONTS.display,
     color: "#FFFFFF",
-    fontSize: 24,
-    marginTop: 10,
-    textShadowColor: "rgba(0,0,0,0.1)",
+    fontSize: 22,
+    textShadowColor: "rgba(0,0,0,0.15)",
     textShadowOffset: { width: 0, height: 2 },
-    textShadowRadius: 3,
+    textShadowRadius: 4,
   },
   pageSub: {
     fontFamily: FONTS.displayLight,
     color: "rgba(255,255,255,0.9)",
-    fontSize: 14,
+    fontSize: 13.5,
     marginTop: 6,
     textAlign: "center",
-    paddingHorizontal: 30,
+    paddingHorizontal: 40,
+  },
+
+  scrollContent: {
+    flexGrow: 1,
+    justifyContent: "center",
+    paddingBottom: 40,
   },
 
   card: {
     backgroundColor: KB.card,
     marginHorizontal: 20,
-    marginTop: 20, // Ajuste para que se vea centrado y coincida con el registro
+    marginTop: -10,
     borderRadius: 24,
     padding: 24,
     shadowColor: KB.greenDark,
@@ -59,6 +77,28 @@ export const s = StyleSheet.create({
     shadowRadius: 20,
     shadowOffset: { width: 0, height: 10 },
     elevation: 8,
+  },
+
+  cardHeadRow: { alignItems: "center", marginBottom: 22 },
+  cardIconRing: {
+    width: 52,
+    height: 52,
+    borderRadius: 26,
+    backgroundColor: "rgba(63,122,92,0.1)",
+    justifyContent: "center",
+    alignItems: "center",
+    marginBottom: 10,
+  },
+  cardTitle: {
+    fontFamily: FONTS.display,
+    fontSize: 19,
+    color: KB.text,
+  },
+  cardSub: {
+    fontSize: 13,
+    color: KB.muted,
+    marginTop: 4,
+    textAlign: "center",
   },
 
   infoBox: {
@@ -69,30 +109,31 @@ export const s = StyleSheet.create({
     borderWidth: 1,
     borderColor: "#D1FAE5",
   },
-  infoText: { 
-    color: KB.greenDark, 
-    fontSize: 13, 
-    lineHeight: 20, 
-    fontWeight: "500", 
-    textAlign: "center" 
+  infoText: {
+    color: KB.greenDark,
+    fontSize: 13,
+    lineHeight: 20,
+    fontWeight: "500",
+    textAlign: "center",
   },
 
+  btnPrimaryWrap: {
+    borderRadius: 18,
+    marginTop: 6,
+    shadowColor: KB.accent,
+    shadowOpacity: 0.4,
+    shadowRadius: 14,
+    shadowOffset: { width: 0, height: 7 },
+    elevation: 5,
+  },
   btnPrimary: {
-    backgroundColor: KB.accent, // Acento mango
-    borderRadius: 16,
+    borderRadius: 18,
     height: 56,
     justifyContent: "center",
     alignItems: "center",
-    marginTop: 16,
-    shadowColor: KB.accent,
-    shadowOpacity: 0.4,
-    shadowRadius: 12,
-    shadowOffset: { width: 0, height: 6 },
-    elevation: 4,
   },
-  btnDisabled: { opacity: 0.6 },
   btnPrimaryText: { color: KB.greenDark, fontWeight: "800", fontSize: 16, letterSpacing: 0.5 },
 
-  linkRow: { alignItems: "center", marginTop: 24 },
+  linkRow: { alignItems: "center", marginTop: 22 },
   linkText: { color: KB.greenMid, fontSize: 14, fontWeight: "700" },
 });

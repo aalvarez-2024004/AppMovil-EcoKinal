@@ -1,9 +1,9 @@
 import React from "react";
 import { View, StyleSheet } from "react-native";
-import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop } from "react-native-svg";
+import Svg, { Path, Defs, LinearGradient as SvgGradient, Stop, Circle } from "react-native-svg";
 import { KB } from "../constants/login";
 
-const HEADER_HEIGHT = 280; // Un poco más alto para dar respiro al texto
+const HEADER_HEIGHT = 300;
 
 export const OrganicHeader = ({ children }) => {
   return (
@@ -11,7 +11,7 @@ export const OrganicHeader = ({ children }) => {
       <Svg
         width="100%"
         height={HEADER_HEIGHT}
-        viewBox="0 0 400 300"
+        viewBox="0 0 400 320"
         preserveAspectRatio="none"
         style={StyleSheet.absoluteFill}
       >
@@ -22,17 +22,16 @@ export const OrganicHeader = ({ children }) => {
           </SvgGradient>
         </Defs>
 
-        {/* silueta de hoja como marca de agua */}
+        {/* silueta única, más orgánica */}
         <Path
-          d="M0,0 L400,0 L400,225 C320,265 260,195 190,225 C120,255 65,205 0,240 Z"
+          d="M0,0 L400,0 L400,235 C330,270 250,215 190,235 C110,260 55,220 0,250 Z"
           fill="url(#headerFill)"
         />
 
-        {/* borde inferior tipo ola/hoja */}
-        <Path
-          d="M0,0 L400,0 L400,205 C320,255 260,165 190,205 C120,245 65,185 0,225 Z"
-          fill="url(#headerFill)"
-        />
+        {/* textura decorativa tipo burbujas / hojas */}
+        <Circle cx="352" cy="55" r="72" fill="rgba(255,255,255,0.05)" />
+        <Circle cx="36" cy="42" r="44" fill="rgba(255,255,255,0.06)" />
+        <Circle cx="68" cy="150" r="16" fill="rgba(255,255,255,0.08)" />
       </Svg>
 
       <View style={styles.content}>{children}</View>
@@ -41,11 +40,6 @@ export const OrganicHeader = ({ children }) => {
 };
 
 const styles = StyleSheet.create({
-  wrap: { 
-    height: HEADER_HEIGHT, 
-  },
-  content: { 
-    alignItems: "center", 
-    paddingTop: 65, // Empuja el contenido para que quede perfectamente en el verde
-  },
+  wrap: { height: HEADER_HEIGHT },
+  content: { alignItems: "center", paddingTop: 68 },
 });

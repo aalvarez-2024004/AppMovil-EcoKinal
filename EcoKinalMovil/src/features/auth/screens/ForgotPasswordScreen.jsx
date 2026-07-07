@@ -7,7 +7,6 @@ import {
   Platform,
   TouchableOpacity,
   StatusBar,
-  useWindowDimensions,
   Keyboard,
   Alert,
   ActivityIndicator,
@@ -24,15 +23,12 @@ import { EKInput } from "../../../shared/components/LoginComponents";
 const ForgotPasswordScreen = () => {
   const navigation = useNavigation();
   const { requestPasswordReset, resetPassword, isLoading } = useAuthStore();
-  const { height } = useWindowDimensions();
 
-  // Fuentes premium añadidas
   const [fontsLoaded] = useFonts({
     Fraunces_600SemiBold,
     Fraunces_500Medium_Italic,
   });
 
-  // step 1 = pedir el correo | step 2 = pegar token + nueva contraseña
   const [step, setStep] = useState(1);
 
   const [email, setEmail] = useState("");
@@ -93,40 +89,45 @@ const ForgotPasswordScreen = () => {
     <View style={s.root}>
       <StatusBar barStyle="light-content" backgroundColor={KB.greenDark} translucent />
 
+      <LinearGradient
+        colors={[KB.greenDark, KB.greenMid]}
+        start={{ x: 0, y: 0 }}
+        end={{ x: 1, y: 1 }}
+        style={s.header}
+      >
+        <TouchableOpacity style={s.backBtn} onPress={() => navigation.goBack()}>
+          <Ionicons name="arrow-back" size={19} color="#FFFFFF" />
+        </TouchableOpacity>
+
+        <View style={s.headerIconRing}>
+          <Ionicons
+            name={step === 1 ? "mail-open-outline" : "key-outline"}
+            size={28}
+            color="#FFFFFF"
+          />
+        </View>
+
+        <Text style={s.pageTitle}>
+          {step === 1 ? "Recuperar contraseña" : "Nueva contraseña"}
+        </Text>
+        <Text style={s.pageSub}>
+          {step === 1
+            ? "Te enviaremos un enlace a tu correo"
+            : "Ingresa el código de tu correo y tu nueva contraseña"}
+        </Text>
+      </LinearGradient>
+
       <KeyboardAvoidingView
         style={s.flex1}
         behavior={Platform.OS === "ios" ? "padding" : "height"}
       >
         <ScrollView
-          contentContainerStyle={{ minHeight: height }}
+          contentContainerStyle={s.scrollContent}
           keyboardShouldPersistTaps="handled"
           showsVerticalScrollIndicator={false}
           bounces={false}
           overScrollMode="never"
         >
-          <LinearGradient
-            colors={[KB.greenDark, KB.greenMid]}
-            start={{ x: 0, y: 0 }}
-            end={{ x: 1, y: 1 }}
-            style={s.header}
-          >
-            <TouchableOpacity
-              style={s.backBtn}
-              onPress={() => navigation.goBack()}
-            >
-              <Ionicons name="arrow-back" size={20} color="#FFFFFF" />
-            </TouchableOpacity>
-
-            <Text style={s.pageTitle}>
-              {step === 1 ? "Recuperar contraseña" : "Nueva contraseña"}
-            </Text>
-            <Text style={s.pageSub}>
-              {step === 1
-                ? "Te enviaremos un enlace a tu correo"
-                : "Ingresa el código de tu correo y tu nueva contraseña"}
-            </Text>
-          </LinearGradient>
-
           <View style={s.card}>
             {step === 1 ? (
               <>
@@ -141,16 +142,24 @@ const ForgotPasswordScreen = () => {
                   error={errors.email}
                 />
 
-                <TouchableOpacity
-                  style={[s.btnPrimary, isLoading && s.btnDisabled]}
-                  onPress={handleRequestReset}
-                  disabled={isLoading}
-                  activeOpacity={0.85}
-                >
-                  <Text style={s.btnPrimaryText}>
-                    {isLoading ? "Enviando..." : "ENVIAR ENLACE"}
-                  </Text>
-                </TouchableOpacity>
+                <View style={s.btnPrimaryWrap}>
+                  <TouchableOpacity
+                    onPress={handleRequestReset}
+                    disabled={isLoading}
+                    activeOpacity={0.9}
+                  >
+                    <LinearGradient
+                      colors={isLoading ? [KB.border, KB.border] : [KB.accent, KB.accentDark]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={s.btnPrimary}
+                    >
+                      <Text style={s.btnPrimaryText}>
+                        {isLoading ? "Enviando..." : "ENVIAR ENLACE"}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
               </>
             ) : (
               <>
@@ -191,21 +200,26 @@ const ForgotPasswordScreen = () => {
                   error={errors.confirmPassword}
                 />
 
-                <TouchableOpacity
-                  style={[s.btnPrimary, isLoading && s.btnDisabled]}
-                  onPress={handleResetPassword}
-                  disabled={isLoading}
-                  activeOpacity={0.85}
-                >
-                  <Text style={s.btnPrimaryText}>
-                    {isLoading ? "Actualizando..." : "CAMBIAR CONTRASEÑA"}
-                  </Text>
-                </TouchableOpacity>
+                <View style={s.btnPrimaryWrap}>
+                  <TouchableOpacity
+                    onPress={handleResetPassword}
+                    disabled={isLoading}
+                    activeOpacity={0.9}
+                  >
+                    <LinearGradient
+                      colors={isLoading ? [KB.border, KB.border] : [KB.accent, KB.accentDark]}
+                      start={{ x: 0, y: 0 }}
+                      end={{ x: 1, y: 1 }}
+                      style={s.btnPrimary}
+                    >
+                      <Text style={s.btnPrimaryText}>
+                        {isLoading ? "Actualizando..." : "CAMBIAR CONTRASEÑA"}
+                      </Text>
+                    </LinearGradient>
+                  </TouchableOpacity>
+                </View>
 
-                <TouchableOpacity
-                  style={s.linkRow}
-                  onPress={() => setStep(1)}
-                >
+                <TouchableOpacity style={s.linkRow} onPress={() => setStep(1)}>
                   <Text style={s.linkText}>Volver a pedir el enlace</Text>
                 </TouchableOpacity>
               </>
