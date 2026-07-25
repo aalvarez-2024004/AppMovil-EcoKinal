@@ -1,13 +1,13 @@
 import { Platform } from "react-native";
 
-const USE_LOCAL_LAN = true;
+const USE_LOCAL_LAN = false;
 
 const BASE_URL =
   Platform.OS === "web"
-    ? "https://ecokinal-auth-api.onrender.com/api"
+    ? "https://app-movil-eco-kinal.vercel.app/api"
     : USE_LOCAL_LAN
-    ? "http://192.168.0.5:3005/api" // 👈 confirma que sea tu IP real
-    : "https://ecokinal-auth-api.onrender.com/api";
+    ? "http://192.168.0.5:3005/api"
+    : "https://app-movil-eco-kinal.vercel.app/api";
 
 export const AUTH_ENDPOINTS = {
   LOGIN:           `${BASE_URL}/auth/login`,
